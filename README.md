@@ -22,6 +22,11 @@ A10ピストン用CSVは現在非対応です。(今後対応予定)
 ## ライセンス
 MIT License
 
+## バージョン履歴
+
+2023.09.16 v0.2 表示の不具合を調整
+2023.09.16 v0.1 最初のリリース
+
 ## 不具合報告
 
 リポジトリの Issues 又は [https://twitter.com/scry1\_](https://twitter.com/scry1_) まで
