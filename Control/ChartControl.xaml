@@ -17,7 +17,7 @@
         </DockPanel>
         <Grid x:Name="PlotsGrid" Margin="0,0,20,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <oxy:Plot x:Name="OxyPlotView" Grid.Row="0" PlotMargins="30,Auto,Auto,Auto"
                       PreviewMouseRightButtonDown="OxyPlotView_PreviewMouseRightButtonDown"
@@ -54,6 +54,7 @@
             </oxy:Plot>
 
             <oxy:Plot x:Name="OxyPlotView2" Grid.Row="1" Visibility="Hidden"
+                      PlotMargins="30,Auto,Auto,Auto"
                       PreviewMouseRightButtonDown="OxyPlotView_PreviewMouseRightButtonDown"
                       PreviewMouseRightButtonUp="OxyPlotView_PreviewMouseRightButtonUp">
                 <oxy:Plot.Axes>

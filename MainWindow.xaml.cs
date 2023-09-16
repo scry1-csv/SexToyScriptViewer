@@ -68,7 +68,7 @@ namespace SexToyScriptViewer
             foreach (var c in _chartControls)
             {
                 RowDefinition row = new();
-                if(c.IsUFOTW) row.Height = new GridLength(2, GridUnitType.Star);
+                if(c.IsUFOTW) row.Height = new GridLength(1.55, GridUnitType.Star);
                 ChartsPanel.RowDefinitions.Add(row);
 
                 Grid.SetRow(_chartControls[i], i);

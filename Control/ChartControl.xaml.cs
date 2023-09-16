@@ -37,9 +37,12 @@ namespace SexToyScriptViewer.Control
         {
             IsUFOTW = true;
 
-            PlotsGrid.RowDefinitions.Add(new() { Height = new GridLength(4, GridUnitType.Star) });
+            PlotsGrid.RowDefinitions.Add(new() { Height = new GridLength(1.23, GridUnitType.Star) });
             TimeAxis.TextColor = Colors.Transparent;
             TimeAxis.TickStyle = TickStyle.None;
+
+            OxyPlotView.Padding = new(8, 8, 8, 8);
+            OxyPlotView2.Padding = new(8, 0, 8, 4);
 
             var margins = OxyPlotView.PlotMargins;
             margins.Bottom = 0;
