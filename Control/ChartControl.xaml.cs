@@ -1,6 +1,10 @@
-﻿using OxyPlot.Axes;
+﻿using OxyPlot;
+using OxyPlot.Annotations;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using SexToyScriptViewer.Script;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -59,6 +63,35 @@ namespace SexToyScriptViewer.Control
             LineSeries2.TrackerFormatString = script.TrackerFormatString;
             OxyPlotView2.Visibility = Visibility.Visible;
             TimeAxis2.InternalAxis.AxisChanged += Axis2ChangedEvent;
+
+
+            var deference = script.DetectDeference();
+            foreach (var (start, end) in deference)
+            {
+                OxyPlotView.Annotations.Add(new OxyPlot.Wpf.RectangleAnnotation()
+                {
+                    MinimumX = start,
+                    MaximumX = end,
+                    MinimumY = -100,
+                    MaximumY = 100,
+                    Fill = Colors.NavajoWhite,
+                    Layer = AnnotationLayer.BelowSeries
+                });
+
+                OxyPlotView2.Annotations.Add(new OxyPlot.Wpf.RectangleAnnotation()
+                {
+                    MinimumX = start,
+                    MaximumX = end,
+                    MinimumY = -100,
+                    MaximumY = 100,
+                    Fill = Colors.NavajoWhite,
+                    Layer = AnnotationLayer.BelowSeries
+                });
+            }
+
+            OxyPlotView.InvalidatePlot();
+            OxyPlotView2.InvalidatePlot();
+            OxyPlotView.ResetAllAxes();
             OxyPlotView2.ResetAllAxes();
         }
 
@@ -164,7 +197,7 @@ namespace SexToyScriptViewer.Control
 
         private void OxyPlotView_PreviewMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _mainWindow.IsUserDragging= false;
+            _mainWindow.IsUserDragging = false;
         }
     }
 }
