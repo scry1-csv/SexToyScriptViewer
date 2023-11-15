@@ -32,6 +32,15 @@
                 ☒
             </Button>
         </DockPanel>
+        <CheckBox
+            x:Name="CheckBox_UfotwLRDifferent"
+            HorizontalAlignment="Center"
+            Checked="CheckBox_UfotwLRDifferent_Checked"
+            Content="左右の違いを検出"
+            DockPanel.Dock="Bottom"
+            IsChecked="False"
+            Unchecked="CheckBox_UfotwLRDifferent_Unchecked"
+            Visibility="Hidden" />
         <Grid x:Name="PlotsGrid" Margin="0,0,20,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />

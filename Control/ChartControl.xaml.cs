@@ -1,9 +1,7 @@
-﻿using OxyPlot;
-using OxyPlot.Annotations;
+﻿using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using SexToyScriptViewer.Script;
-using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +16,8 @@ namespace SexToyScriptViewer.Control
     {
         private readonly IScript _script;
         private readonly MainWindow _mainWindow;
+        private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations = new();
+        private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations2 = new();
 
         public bool IsUFOTW { get; init; }
 
@@ -64,11 +64,11 @@ namespace SexToyScriptViewer.Control
             OxyPlotView2.Visibility = Visibility.Visible;
             TimeAxis2.InternalAxis.AxisChanged += Axis2ChangedEvent;
 
-
+            CheckBox_UfotwLRDifferent.Visibility = Visibility.Visible;
             var deference = script.DetectDeference();
             foreach (var (start, end) in deference)
             {
-                OxyPlotView.Annotations.Add(new OxyPlot.Wpf.RectangleAnnotation()
+                UfotwDefferenceAnnotations.Add(new OxyPlot.Wpf.RectangleAnnotation()
                 {
                     MinimumX = start,
                     MaximumX = end,
@@ -78,7 +78,7 @@ namespace SexToyScriptViewer.Control
                     Layer = AnnotationLayer.BelowSeries
                 });
 
-                OxyPlotView2.Annotations.Add(new OxyPlot.Wpf.RectangleAnnotation()
+                UfotwDefferenceAnnotations2.Add(new OxyPlot.Wpf.RectangleAnnotation()
                 {
                     MinimumX = start,
                     MaximumX = end,
@@ -89,11 +89,11 @@ namespace SexToyScriptViewer.Control
                 });
             }
 
-            OxyPlotView.InvalidatePlot();
-            OxyPlotView2.InvalidatePlot();
             OxyPlotView.ResetAllAxes();
             OxyPlotView2.ResetAllAxes();
         }
+
+
 
         public void SetTimeAxisLabelScriptTime()
         {
@@ -198,6 +198,28 @@ namespace SexToyScriptViewer.Control
         private void OxyPlotView_PreviewMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             _mainWindow.IsUserDragging = false;
+        }
+
+        private void CheckBox_UfotwLRDifferent_Checked(object sender, RoutedEventArgs e)
+        {
+            foreach (var a in UfotwDefferenceAnnotations)
+                OxyPlotView.Annotations.Add(a);
+            foreach (var a in UfotwDefferenceAnnotations2)
+                OxyPlotView2.Annotations.Add(a);
+
+            OxyPlotView.InvalidatePlot();
+            OxyPlotView2.InvalidatePlot();
+        }
+
+        private void CheckBox_UfotwLRDifferent_Unchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (var a in UfotwDefferenceAnnotations)
+                OxyPlotView.Annotations.Remove(a);
+            foreach (var a2 in UfotwDefferenceAnnotations2)
+                OxyPlotView2.Annotations.Remove(a2);
+
+            OxyPlotView.InvalidatePlot();
+            OxyPlotView2.InvalidatePlot();
         }
     }
 }
