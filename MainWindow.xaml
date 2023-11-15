@@ -1,90 +1,142 @@
-﻿<Window x:Class="SexToyScriptViewer.MainWindow"
-        xmlns:vm="clr-namespace:SexToyScriptViewer"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SexToyScriptViewer"
-        xmlns:localControl="clr-namespace:SexToyScriptViewer.Control"
-        xmlns:oxy="http://oxyplot.org/wpf"
-        mc:Ignorable="d"
-        Title="SexToyScriptViewer"
-        Height="400" Width="600"
-        AllowDrop="True"
-        ResizeMode="CanResizeWithGrip"
-        PreviewDragOver="Window_PreviewDragOver" Drop="Window_Drop">
+﻿<Window
+    x:Class="SexToyScriptViewer.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SexToyScriptViewer"
+    xmlns:localControl="clr-namespace:SexToyScriptViewer.Control"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    xmlns:vm="clr-namespace:SexToyScriptViewer"
+    Title="SexToyScriptViewer"
+    Width="600"
+    Height="400"
+    AllowDrop="True"
+    Drop="Window_Drop"
+    PreviewDragOver="Window_PreviewDragOver"
+    ResizeMode="CanResizeWithGrip"
+    mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"
-                           MinHeight="{Binding ElementName=MediaPlayerPanel, Path=Height}"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto" MinHeight="{Binding ElementName=MediaPlayerPanel, Path=Height}" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel x:Name="MediaPlayerPanel" Grid.Row="0" Margin="0,0,0,3"
+        <StackPanel
+            x:Name="MediaPlayerPanel"
+            Grid.Row="0"
+            Margin="0,0,0,3"
             MouseWheel="Grid_MouseWheel">
             <DockPanel>
-                <Slider x:Name="VolumeSlider" DockPanel.Dock="Right"
-                        Width="80" MaxWidth="80"
-                        Margin="0,0,8,0" 
-                        Maximum="1" IsEnabled="False"
-                        Value="{Binding ElementName=MediaElem, Path=Volume}" VerticalAlignment="Center" />
-                <Label x:Name="VolumeLabel" DockPanel.Dock="Right" IsEnabled="False">音量</Label>
+                <Slider
+                    x:Name="VolumeSlider"
+                    Width="80"
+                    MaxWidth="80"
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right"
+                    IsEnabled="False"
+                    Maximum="1"
+                    Value="{Binding ElementName=MediaElem, Path=Volume}" />
+                <Label
+                    x:Name="VolumeLabel"
+                    DockPanel.Dock="Right"
+                    IsEnabled="False">
+                    音量
+                </Label>
                 <StackPanel Orientation="Horizontal">
-                    <Button x:Name="PlayButton" Click="Play_Click" Margin="3" IsEnabled="False">
+                    <Button
+                        x:Name="PlayButton"
+                        Margin="3"
+                        Click="Play_Click"
+                        IsEnabled="False">
                         再生
                     </Button>
-                    <Button x:Name="PauseButton" Click="Pause_Click" Margin="3" IsEnabled="False">
+                    <Button
+                        x:Name="PauseButton"
+                        Margin="3"
+                        Click="Pause_Click"
+                        IsEnabled="False">
                         一時停止
                     </Button>
-                    <Button x:Name="StopButton" Click="Stop_Click" Margin="3" IsEnabled="False">
+                    <Button
+                        x:Name="StopButton"
+                        Margin="3"
+                        Click="Stop_Click"
+                        IsEnabled="False">
                         停止
                     </Button>
-                    <Label x:Name="MediaElapsedLabel"/>
+                    <Label x:Name="MediaElapsedLabel" />
                 </StackPanel>
             </DockPanel>
 
-            <MediaElement Name="MediaElem" Stretch="Uniform" MaxHeight="300" 
-                          LoadedBehavior="Manual"
-                          MediaOpened="MediaElem_MediaOpened"
-                          MediaFailed="MediaElem_MediaFailed"
-                          Volume="1"/>
+            <MediaElement
+                Name="MediaElem"
+                MaxHeight="300"
+                LoadedBehavior="Manual"
+                MediaFailed="MediaElem_MediaFailed"
+                MediaOpened="MediaElem_MediaOpened"
+                Stretch="Uniform"
+                Volume="1" />
 
             <DockPanel>
-                <Slider Name="MediaSeekbarSlider" IsEnabled="False"
-                        Thumb.DragStarted="MediaProgressSlider_DragStarted"
-                        Thumb.DragCompleted="MediaProgressSlider_DragCompleted"
-                        ValueChanged="MediaProgressSlider_ValueChanged" Margin="30,0,21,0"/>
+                <Slider
+                    Name="MediaSeekbarSlider"
+                    Margin="30,0,21,0"
+                    IsEnabled="False"
+                    Thumb.DragCompleted="MediaProgressSlider_DragCompleted"
+                    Thumb.DragStarted="MediaProgressSlider_DragStarted"
+                    ValueChanged="MediaProgressSlider_ValueChanged" />
             </DockPanel>
         </StackPanel>
 
-        <GridSplitter Grid.Row="1" Grid.Column="0" Height="3"
-                  HorizontalAlignment="Stretch" Grid.ColumnSpan="3" VerticalAlignment="Bottom"
-                      x:Name="Resizer" Visibility="Hidden" Grid.RowSpan="2"/>
+        <GridSplitter
+            x:Name="Resizer"
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Height="3"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom"
+            Visibility="Hidden" />
 
         <DockPanel Grid.Row="2">
 
             <DockPanel DockPanel.Dock="Top">
-                <Button Content="開く..."
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"
+                <Button
                     Margin="20,10,10,10"
-                    Padding="8,3" Click="OpenButton_Click"/>
-                <TextBlock Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                ドラッグ＆ドロップでもファイルを開けます。
+                    Padding="8,3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Click="OpenButton_Click"
+                    Content="開く..." />
+                <TextBlock
+                    Margin="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    ドラッグ＆ドロップでもファイルを開けます。
                 </TextBlock>
                 <TextBlock Margin="20,10" HorizontalAlignment="Right">
-            右クリック＋ドラッグ：移動<LineBreak />
-            マウスホイール：ズーム
-                </TextBlock>
+                    右クリック＋ドラッグ：移動<LineBreak />
+                    マウスホイール：ズーム</TextBlock>
             </DockPanel>
 
-            <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" Orientation="Horizontal">
-                <RadioButton x:Name="RadioButton_HHMMSS" Margin="0,0,10,0" Checked="RadioButton_HHMMSS_Checked">時分秒表示</RadioButton>
+            <StackPanel
+                HorizontalAlignment="Center"
+                DockPanel.Dock="Bottom"
+                Orientation="Horizontal">
+                <RadioButton
+                    x:Name="RadioButton_HHMMSS"
+                    Margin="0,0,10,0"
+                    Checked="RadioButton_HHMMSS_Checked">
+                    時分秒表示
+                </RadioButton>
                 <RadioButton Margin="0,0,0,0" Checked="RadioButton_InternalTime_Checked">内部値表示</RadioButton>
             </StackPanel>
 
-            <Grid  x:Name="ChartsPanel">
-            </Grid>
+
+            <Grid x:Name="ChartsPanel" />
 
         </DockPanel>
     </Grid>
