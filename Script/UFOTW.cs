@@ -111,23 +111,30 @@ namespace SexToyScriptViewer.Script
         {
             List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0, 0) };
 
-            bool prevDirection = true;
-            int prevPower = 0;
+            bool prevLeftDirection = true, prevRightDirection = true;
+            int prevLeftPower = 0, prevRightPower = 0;
 
             foreach (var line in _scriptData)
             {
-                if (line.LeftDirection != prevDirection || line.LeftPower != prevPower)
+                if (line.LeftDirection != prevLeftDirection || line.LeftPower != prevLeftPower ||
+                    line.RightDirection != prevRightDirection || line.RightPower != prevRightPower)
                 {
-                    int power;
+                    int leftPower, rightPower;
                     if (line.LeftDirection == true)
-                        power = line.LeftPower;
+                        leftPower = line.LeftPower;
                     else
-                        power = -line.LeftPower;
+                        leftPower = -line.LeftPower;
+                    if (line.RightDirection == true)
+                        rightPower = line.RightPower;
+                    else
+                        rightPower = -line.RightPower;
 
-                    result.Add(new CustomDataPoint(line.Milliseconds, prevPower, line.InternalTime));
-                    result.Add(new CustomDataPoint(line.Milliseconds, power, line.InternalTime));
-                    prevDirection = line.LeftDirection;
-                    prevPower = line.LeftPower;
+                    result.Add(new CustomDataPoint(line.Milliseconds, prevLeftPower, line.InternalTime));
+                    result.Add(new CustomDataPoint(line.Milliseconds, leftPower, line.InternalTime));
+                    prevLeftDirection = line.LeftDirection;
+                    prevLeftPower = leftPower;
+                    prevRightDirection = line.RightDirection;
+                    prevRightPower = rightPower;
                 }
             }
 
@@ -139,23 +146,30 @@ namespace SexToyScriptViewer.Script
         {
             List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0, 0) };
 
-            bool prevDirection = true;
-            int prevPower = 0;
+            bool prevLeftDirection = true, prevRightDirection = true;
+            int prevLeftPower = 0, prevRightPower = 0;
 
             foreach (var line in _scriptData)
             {
-                if (line.RightDirection != prevDirection || line.RightPower != prevPower)
+                if (line.LeftDirection != prevLeftDirection || line.LeftPower != prevLeftPower ||
+                    line.RightDirection != prevRightDirection || line.RightPower != prevRightPower)
                 {
-                    int power;
-                    if (line.RightDirection == true)
-                        power = line.RightPower;
+                    int leftPower, rightPower;
+                    if (line.LeftDirection == true)
+                        leftPower = line.LeftPower;
                     else
-                        power = -line.RightPower;
+                        leftPower = -line.LeftPower;
+                    if (line.RightDirection == true)
+                        rightPower = line.RightPower;
+                    else
+                        rightPower = -line.RightPower;
 
-                    result.Add(new CustomDataPoint(line.Milliseconds, prevPower, line.InternalTime));
-                    result.Add(new CustomDataPoint(line.Milliseconds, power, line.InternalTime));
-                    prevDirection = line.RightDirection;
-                    prevPower = line.RightPower;
+                    result.Add(new CustomDataPoint(line.Milliseconds, prevRightPower, line.InternalTime));
+                    result.Add(new CustomDataPoint(line.Milliseconds, rightPower, line.InternalTime));
+                    prevLeftDirection = line.LeftDirection;
+                    prevLeftPower = leftPower;
+                    prevRightDirection = line.RightDirection;
+                    prevRightPower = rightPower;
                 }
             }
 
