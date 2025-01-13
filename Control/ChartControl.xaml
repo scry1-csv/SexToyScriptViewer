@@ -93,7 +93,8 @@
             <oxy:Plot
                 x:Name="OxyPlotView2"
                 Grid.Row="1"
-                PlotMargins="30,Auto,Auto,Auto"
+                Padding="8,0,8,4"
+                PlotMargins="30,0,Auto,Auto"
                 PreviewMouseRightButtonDown="OxyPlotView_PreviewMouseRightButtonDown"
                 PreviewMouseRightButtonUp="OxyPlotView_PreviewMouseRightButtonUp"
                 Visibility="Hidden">
@@ -122,7 +123,7 @@
 
                 <!--  プロットデータの設定  -->
                 <oxy:Plot.Series>
-                    <oxy:LineSeries x:Name="LineSeries2" />
+                    <oxy:LineSeries x:Name="LineSeries2" TrackerFormatString="{Binding ElementName=LineSeries, Path=(oxy:LineSeries.TrackerFormatString)}" />
                 </oxy:Plot.Series>
 
                 <oxy:Plot.Annotations>

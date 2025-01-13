@@ -46,21 +46,14 @@ namespace SexToyScriptViewer.Control
             TimeAxis.TickStyle = TickStyle.None;
 
             OxyPlotView.Padding = new(8, 8, 8, 8);
-            OxyPlotView2.Padding = new(8, 0, 8, 4);
 
             var margins = OxyPlotView.PlotMargins;
             margins.Bottom = 0;
             OxyPlotView.PlotMargins = margins;
 
-            margins = OxyPlotView2.PlotMargins;
-            margins.Top = 0;
-            OxyPlotView2.PlotMargins = margins;
-
             TimeAxis.TitleFontSize = 1;
-            PowerAxis2.Maximum = PowerAxis2.AbsoluteMaximum = 100;
-            PowerAxis2.Minimum = PowerAxis2.AbsoluteMinimum = -100;
             LineSeries2.ItemsSource = script.ToPlotRight();
-            LineSeries2.TrackerFormatString = script.TrackerFormatString;
+            //LineSeries2.TrackerFormatString = script.TrackerFormatString;
             OxyPlotView2.Visibility = Visibility.Visible;
             TimeAxis2.InternalAxis.AxisChanged += Axis2ChangedEvent;
 
