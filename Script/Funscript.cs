@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows.Navigation;
 
 namespace SexToyScriptViewer.Script
@@ -35,13 +36,13 @@ namespace SexToyScriptViewer.Script
 
         public IDataPointProvider[] ToPlot()
         {
-            List<CustomDataPoint> result = new() { new(0, Data.actions[0].pos, 0) };
+            List<CustomDataPoint> result = new() { new(0, Data.Actions[0].Pos, 0) };
 
             int prevtime = 0;
-            foreach (var item in Data.actions)
+            foreach (var item in Data.Actions)
             {
-                int at = item.at;
-                result.Add(new(at, item.pos, at - prevtime));
+                int at = item.At;
+                result.Add(new(at, item.Pos, at - prevtime));
                 prevtime = at;
             }
             return result.ToArray();
@@ -82,7 +83,6 @@ namespace SexToyScriptViewer.Script
             public string HHMMSS { get; }
             public string ScriptTime { get; }
 
-
             public CustomDataPoint(double x, double y, int duration)
             {
                 X = x;
@@ -99,25 +99,24 @@ namespace SexToyScriptViewer.Script
         }
     }
 
-
-#pragma warning disable IDE1006 // 命名スタイル
-#pragma warning disable CS8981 // 型名には、小文字の ASCII 文字のみが含まれています。このような名前は、プログラミング言語用に予約されている可能性があります。
-
     public class FunscriptJson
     {
-        public string version { get; set; } = "";
-        public bool inverted { get; set; }
-        public int range { get; set; }
-        public List<action> actions { get; set; } = new List<action>();
+        [JsonPropertyName("version")]
+        public string Version { get; set; } = "";
+        [JsonPropertyName("inverted")]
+        public bool Inverted { get; set; }
+        [JsonPropertyName("range")]
+        public int Range { get; set; }
+        [JsonPropertyName("actions")]
+        public List<Action> Actions { get; set; } = new List<Action>();
 
-        public class action
+        public class Action
         {
-            public int pos { get; set; }
-            public int at { get; set; }
-            public override string ToString() => $"pos: {pos}, at: {at}";
+            [JsonPropertyName("pos")]
+            public int Pos { get; set; }
+            [JsonPropertyName("at")]
+            public int At { get; set; }
+            public override string ToString() => $"pos: {Pos}, at: {At}";
         }
     }
-#pragma warning restore IDE1006
-#pragma warning restore CS8981 // 型名には、小文字の ASCII 文字のみが含まれています。このような名前は、プログラミング言語用に予約されている可能性があります。
-
 }
