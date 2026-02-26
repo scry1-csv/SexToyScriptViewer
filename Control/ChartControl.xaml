@@ -19,18 +19,39 @@
                 x:Name="FileNameBlock"
                 Padding="4,0,0,0"
                 HorizontalAlignment="Stretch"
-                DockPanel.Dock="Left">
+                DockPanel.Dock="Left"
+                FontSize="11px">
                 FileName
             </TextBlock>
-            <Button
-                x:Name="CloseButton"
-                HorizontalAlignment="Right"
-                Background="#00DDDDDD"
-                BorderThickness="0"
-                Click="CloseButton_Click"
-                DockPanel.Dock="Right">
-                ☒
-            </Button>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button
+                    x:Name="ReloadButton"
+                    Margin="0,0,4,0"
+                    HorizontalAlignment="Right"
+                    Background="#00DDDDDD"
+                    BorderThickness="0"
+                    Click="ReloadButton_Click"
+                    DockPanel.Dock="Right">
+                    <TextBlock
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="10"
+                        Text="&#xe777;" />
+                </Button>
+                <Button
+                    x:Name="CloseButton"
+                    Margin="0,0,4,0"
+                    HorizontalAlignment="Right"
+                    Background="#00DDDDDD"
+                    BorderThickness="0"
+                    Click="CloseButton_Click"
+                    DockPanel.Dock="Right">
+                    <TextBlock
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="10px"
+                        Text="&#xe8bb;" />
+                </Button>
+            </StackPanel>
+
         </DockPanel>
         <CheckBox
             x:Name="CheckBox_UfotwLRDifferent"

@@ -13,6 +13,7 @@ namespace SexToyScriptViewer.Script
         public int PlotMax { get { return 100; } }
         public int PlotMin { get { return -100; } }
         public string FileName { get; init; } = "";
+        public required string FilePath { get; init; }
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}"; } }
 
         // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
@@ -87,6 +88,7 @@ namespace SexToyScriptViewer.Script
             {
                 _scriptData = result,
                 FileName = Path.GetFileName(path),
+                FilePath = path
             };
             
         }

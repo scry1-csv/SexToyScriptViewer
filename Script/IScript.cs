@@ -13,6 +13,7 @@ namespace SexToyScriptViewer.Script
         public abstract int PlotMax { get; }
         public abstract int PlotMin { get; }
         public abstract string FileName { get; init; }
+        public abstract string FilePath { get; init; }
         public abstract string TrackerFormatString { get; }
 
         public static abstract int Validate(string script_str);

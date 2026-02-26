@@ -8,14 +8,13 @@ using System.Text.RegularExpressions;
 
 namespace SexToyScriptViewer.Script
 {
-    partial class TimeRoter : IScript
+    partial class CoyoteScript : IScript
     {
-        public int PlotMax { get { return 1000; } }
+        public int PlotMax { get { return 100; } }
         public int PlotMin { get { return 0; } }
-        public string FileName { get; init; } = "";
+        public required string FileName { get; init; } = "";
         public required string FilePath { get; init; }
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}"; } }
-
 
         // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
         private List<ScriptLine> _scriptData = new() { };
@@ -34,12 +33,9 @@ namespace SexToyScriptViewer.Script
             return result;
         }
 
-        public int MillisecondsToInternalTime(double milliseconds)
-        {
-            return Convert.ToInt32(milliseconds / 10);
-        }
+        public int MillisecondsToInternalTime(double milliseconds) => (int)milliseconds;
 
-        public string LabelFormatter_ScriptTime(double milliseconds) => ((decimal)milliseconds / 10).ToString();
+        public string LabelFormatter_ScriptTime(double milliseconds) => milliseconds.ToString();
 
         public static string? Inspect(string csv_str)
         {
@@ -48,7 +44,6 @@ namespace SexToyScriptViewer.Script
             StringBuilder result = new();
 
             var emptyline = new Regex(@"^$");
-            var syntax = new Regex(@"^[0-9]+,[01],(100|[0-9]{1,2})$");
             //int prevtime = -1;
 
             for (int i = 0; i < lines.Count; i++)
@@ -56,7 +51,7 @@ namespace SexToyScriptViewer.Script
                 if (emptyline.IsMatch(lines[i]))
                     result.AppendLine($"{i + 1}行目 空行です！");
 
-                if (!syntax.IsMatch(lines[i]))
+                if (!ValidatorRegex().IsMatch(lines[i]))
                     result.AppendLine($"{i + 1}行目 構文エラー: {lines[i]}");
             }
 
@@ -66,30 +61,7 @@ namespace SexToyScriptViewer.Script
                 return null;
         }
 
-        public static List<ScriptLine> ParseCSV(string csv_str)
-        {
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
-
-            List<ScriptLine> result = new();
-
-            foreach (var line in lines)
-            {
-                var splitted = line.Split(',');
-
-                var d = decimal.Parse(splitted[0]);
-                int time = decimal.ToInt32(d * 100);
-
-                result.Add(new ScriptLine()
-                {
-                    InternalTime = time,
-                    Power = int.Parse(splitted[1])
-                });
-            }
-
-            return result;
-        }
-
-        public static TimeRoter? LoadScript(string path)
+        public static CoyoteScript? LoadScript(string path)
         {
             using var f = new StreamReader(path);
             var csv_str = f.ReadToEnd();
@@ -104,17 +76,15 @@ namespace SexToyScriptViewer.Script
                     return null;
 
                 var splitted = line.Split(',');
-                var d = decimal.Parse(splitted[0]);
-                int time = decimal.ToInt32(d * 100);
-
                 result.Add(new ScriptLine()
                 {
-                    InternalTime = time,
-                    Power = int.Parse(splitted[1])
+                    InternalTime = int.Parse(splitted[0]),
+                    Frequency = int.Parse(splitted[1]),
+                    Strength = int.Parse(splitted[2])
                 });
             }
 
-            return new TimeRoter()
+            return new CoyoteScript()
             {
                 _scriptData = result,
                 FileName = Path.GetFileName(path),
@@ -131,8 +101,8 @@ namespace SexToyScriptViewer.Script
             foreach (var line in _scriptData)
             {
                 result.Add(new CustomDataPoint(line.Milliseconds, prevPower));
-                result.Add(new CustomDataPoint(line.Milliseconds, line.Power));
-                prevPower = line.Power;
+                result.Add(new CustomDataPoint(line.Milliseconds, line.Strength));
+                prevPower = line.Strength;
             }
 
             return result.ToArray();
@@ -143,17 +113,20 @@ namespace SexToyScriptViewer.Script
         /// </summary>
         public struct ScriptLine
         {
-            /// <summary>1/100秒単位</summary>
+            /// <summary>ミリ秒単位</summary>
             public int InternalTime;
-            /// <summary>0～1000まで</summary>
-            public int Power;
-            public readonly double Milliseconds { get => (double)InternalTime * 10; }
+            /// <summary>0～100まで</summary>
+            public int Frequency;
+            /// <summary>0～100まで</summary>
+            public int Strength;
+            public readonly double Milliseconds { get => InternalTime; }
 
             public override string ToString()
             {
                 var builder = new StringBuilder();
                 builder.Append($"InternalTime:{InternalTime}, ");
-                builder.Append($"Power:{Power}");
+                builder.Append($"Frequency:{Frequency}, ");
+                builder.Append($"Strength:{Strength}");
                 return builder.ToString();
             }
         }
@@ -162,6 +135,7 @@ namespace SexToyScriptViewer.Script
         {
             public double X { get; }
             public double Y { get; }
+            public int Frequency { get; }
             public string HHMMSS { get; }
             public string ScriptTime { get; }
             public DataPoint GetDataPoint()
@@ -174,11 +148,11 @@ namespace SexToyScriptViewer.Script
                 X = x;
                 Y = y;
                 HHMMSS = ScriptUtil.MillisecondsToHHMMSS(x);
-                ScriptTime = $"{x / 1000:F2}";
+                ScriptTime = x.ToString();
             }
         }
 
-        [GeneratedRegex("^([0-9]+)(\\.[0-9]{1,2})?,(1000|[0-9]{1,3})$")]
+        [GeneratedRegex("^([0-9]+),(100|[0-9]{1,2}),(100|[0-9]{1,2})$")]
         private static partial Regex ValidatorRegex();
     }
 }

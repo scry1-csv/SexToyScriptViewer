@@ -18,12 +18,15 @@ namespace SexToyScriptViewer.Script
         public string FileName { get; init; }
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}\n移動時間: {Duration}"; } }
 
+        public string FilePath { get; init; }
+
         private readonly FunscriptJson Data;
 
-        public Funscript(FunscriptJson data, string filename)
+        public Funscript(FunscriptJson data, string filename, string filePath)
         {
             Data = data;
             FileName = filename;
+            FilePath = filePath;
         }
 
         public static Funscript? LoadScript(string path) {
@@ -31,7 +34,7 @@ namespace SexToyScriptViewer.Script
             if(result is null) 
                 return null;
             else
-                return new Funscript(result, Path.GetFileName(path));            
+                return new Funscript(result, Path.GetFileName(path), path);            
         }
 
         public IDataPointProvider[] ToPlot()

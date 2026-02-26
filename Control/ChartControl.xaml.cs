@@ -14,7 +14,7 @@ namespace SexToyScriptViewer.Control
     /// </summary>
     public partial class ChartControl : UserControl
     {
-        private readonly IScript _script;
+        private IScript _script;
         private readonly MainWindow _mainWindow;
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations = new();
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations2 = new();
@@ -29,12 +29,7 @@ namespace SexToyScriptViewer.Control
             _mainWindow = mainWindow;
             FileNameBlock.Text = _script.FileName;
 
-            PowerAxis.Maximum = PowerAxis.AbsoluteMaximum = script.PlotMax;
-            PowerAxis.Minimum = PowerAxis.AbsoluteMinimum = script.PlotMin;
-            LineSeries.ItemsSource = script.ToPlot();
-            LineSeries.TrackerFormatString = _script.TrackerFormatString;
-            TimeAxis.InternalAxis.AxisChanged += AxisChangedEvent;
-            OxyPlotView.ResetAllAxes();
+            DisplayChart();
         }
 
         public ChartControl(MainWindow mainWindow, UFOTW script) : this(mainWindow, (IScript)script)
@@ -86,6 +81,15 @@ namespace SexToyScriptViewer.Control
             OxyPlotView2.ResetAllAxes();
         }
 
+        private void DisplayChart()
+        {
+            PowerAxis.Maximum = PowerAxis.AbsoluteMaximum = _script.PlotMax;
+            PowerAxis.Minimum = PowerAxis.AbsoluteMinimum = _script.PlotMin;
+            LineSeries.ItemsSource = _script.ToPlot();
+            LineSeries.TrackerFormatString = _script.TrackerFormatString;
+            TimeAxis.InternalAxis.AxisChanged += AxisChangedEvent;
+            OxyPlotView.ResetAllAxes();
+        }
 
 
         public void SetTimeAxisLabelScriptTime()
@@ -137,6 +141,18 @@ namespace SexToyScriptViewer.Control
                 TimeAxis2.InternalAxis.Zoom(min, max);
                 OxyPlotView2.InvalidatePlot();
             }
+        }
+
+        private void ReloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            var script = ScriptUtil.LoadScript(_script.FilePath);
+            if (script != null)
+            {
+                _script = script;
+                DisplayChart();
+                _mainWindow.RefleshCharts();
+            }
+
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

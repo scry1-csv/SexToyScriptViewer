@@ -21,6 +21,8 @@ namespace SexToyScriptViewer.Script
                 IScript? result;
                 if (Path.GetExtension(path) == ".funscript")
                     result = Funscript.LoadScript(path);
+                else if (Path.GetExtension(path) == ".coyotescript")
+                    result = CoyoteScript.LoadScript(path);
                 else
                 {
                     result = UFOTW.LoadScript(path);

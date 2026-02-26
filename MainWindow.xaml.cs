@@ -23,6 +23,9 @@ namespace SexToyScriptViewer
         private string _mediaDuration = "";
         public bool IsUserDragging = false;
 
+        private double zoomMin = 0;
+        private double zoomMax = 0;
+
         private readonly List<ChartControl> _chartControls = new();
         
         public MainWindow()
@@ -48,6 +51,8 @@ namespace SexToyScriptViewer
         {
             var min = sender.TimeAxis.InternalAxis.ActualMinimum;
             var max = sender.TimeAxis.InternalAxis.ActualMaximum;
+            zoomMin = min;
+            zoomMax = max;
             foreach (var item in _chartControls)
                 if (item != sender)
                     item.ZoomTimeAxis(min, max);
@@ -59,7 +64,7 @@ namespace SexToyScriptViewer
                 c.MovePlayingAnnotation(milliseconds);
         }
 
-        private void RefleshCharts()
+        public void RefleshCharts()
         {
             ChartsPanel.Children.Clear();
             ChartsPanel.RowDefinitions.Clear();
@@ -74,10 +79,13 @@ namespace SexToyScriptViewer
                 Grid.SetRow(_chartControls[i], i);
                 ChartsPanel.Children.Add(_chartControls[i]);
                 i++;
+
+                if(zoomMin > 0 | zoomMax > 0)
+                    c.ZoomTimeAxis(zoomMin, zoomMax);
             }
 
-            if(_chartControls.Count > 2)
-                SyncChartsRange(_chartControls[0]);
+            //if(_chartControls.Count > 2)
+            //    SyncChartsRange(_chartControls[0]);
         }
 
 
@@ -87,6 +95,7 @@ namespace SexToyScriptViewer
             {
                 case ".csv":
                 case ".funscript":
+                case ".coyotescript":
                     OpenScript(path);
                     break;
                 case ".mp3":
@@ -130,7 +139,6 @@ namespace SexToyScriptViewer
         {
             PlayButton.IsEnabled = true;
             PauseButton.IsEnabled = true;
-            StopButton.IsEnabled = true;
             VolumeSlider.IsEnabled = true;
             VolumeLabel.IsEnabled = true;
             MediaSeekbarSlider.IsEnabled = true;
@@ -307,6 +315,19 @@ namespace SexToyScriptViewer
         private void MediaElem_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
             Util.ShowMessageBoxTopMost("メディアの読み込みに失敗しました");
+        }
+
+        private void PlaybackSpeedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(MediaElem is not null)
+                MediaElem.SpeedRatio = PlaybackSpeedSlider.Value / 10;
+        }
+
+        private void Speed1xButton_Click(object sender, RoutedEventArgs e)
+        {
+            MediaElem.SpeedRatio = 1;
+            PlaybackSpeedSlider.Value = 10;
+              
         }
     }
 }

@@ -47,24 +47,41 @@
                 <StackPanel Orientation="Horizontal">
                     <Button
                         x:Name="PlayButton"
-                        Margin="3"
+                        Margin="12,4,12,4"
+                        Padding="12,0,12,0"
                         Click="Play_Click"
                         IsEnabled="False">
                         再生
                     </Button>
                     <Button
                         x:Name="PauseButton"
-                        Margin="3"
+                        Margin="12,4,12,4"
+                        Padding="12,0,12,0"
                         Click="Pause_Click"
                         IsEnabled="False">
                         一時停止
                     </Button>
+                    <TextBlock>再生速度</TextBlock>
+                    <Slider
+                        x:Name="PlaybackSpeedSlider"
+                        Width="150"
+                        Margin="12,4,4,4"
+                        Foreground="Black"
+                        IsSnapToTickEnabled="True"
+                        Maximum="20"
+                        Minimum="1"
+                        SmallChange="1"
+                        TickFrequency="1"
+                        TickPlacement="TopLeft"
+                        ValueChanged="PlaybackSpeedSlider_ValueChanged"
+                        Value="10" />
                     <Button
-                        x:Name="StopButton"
-                        Margin="3"
-                        Click="Stop_Click"
-                        IsEnabled="False">
-                        停止
+                        x:Name="Speed1xButton"
+                        Width="36px"
+                        Margin="4,4,12,4"
+                        Click="Speed1xButton_Click"
+                        IsEnabled="True">
+                        1x
                     </Button>
                     <Label x:Name="MediaElapsedLabel" />
                 </StackPanel>
