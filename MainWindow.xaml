@@ -7,7 +7,6 @@
     xmlns:localControl="clr-namespace:SexToyScriptViewer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="http://oxyplot.org/wpf"
-    xmlns:vm="clr-namespace:SexToyScriptViewer"
     Title="SexToyScriptViewer"
     Width="600"
     Height="400"
@@ -18,7 +17,7 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" MinHeight="{Binding ElementName=MediaPlayerPanel, Path=Height}" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -37,7 +36,8 @@
                     DockPanel.Dock="Right"
                     IsEnabled="False"
                     Maximum="1"
-                    Value="{Binding ElementName=MediaElem, Path=Volume}" />
+                    Value="1"
+                    ValueChanged="VolumeSlider_ValueChanged" />
                 <Label
                     x:Name="VolumeLabel"
                     DockPanel.Dock="Right"

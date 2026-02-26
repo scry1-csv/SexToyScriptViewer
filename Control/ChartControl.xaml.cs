@@ -1,7 +1,7 @@
 ﻿using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
-using SexToyScriptViewer.Script;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,97 +14,113 @@ namespace SexToyScriptViewer.Control
     /// </summary>
     public partial class ChartControl : UserControl
     {
-        private IScript _script;
-        private readonly MainWindow _mainWindow;
+        private readonly Controller _controller;
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations = new();
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations2 = new();
+        private Func<double, string>? _scriptTimeFormatter;
 
-        public bool IsUFOTW { get; init; }
+        public bool IsDualChart { get; private set; }
 
-        public ChartControl(MainWindow mainWindow, IScript script)
+        internal ChartControl(Controller controller)
         {
             InitializeComponent();
-
-            _script = script;
-            _mainWindow = mainWindow;
-            FileNameBlock.Text = _script.FileName;
-
-            DisplayChart();
+            _controller = controller;
         }
 
-        public ChartControl(MainWindow mainWindow, UFOTW script) : this(mainWindow, (IScript)script)
+        public void InitializeChart(
+            string fileName,
+            double plotMin, double plotMax,
+            string trackerFormatString,
+            System.Collections.IEnumerable itemsSource,
+            System.Collections.IEnumerable? itemsSource2,
+            Func<double, string>? scriptTimeFormatter,
+            IEnumerable<(double start, double end)>? differenceRanges)
         {
-            IsUFOTW = true;
+            FileNameBlock.Text = fileName;
+            IsDualChart = itemsSource2 != null;
+            _scriptTimeFormatter = scriptTimeFormatter;
 
-            PlotsGrid.RowDefinitions.Add(new() { Height = new GridLength(1.23, GridUnitType.Star) });
-            TimeAxis.TextColor = Colors.Transparent;
-            TimeAxis.TickStyle = TickStyle.None;
+            PowerAxis.Maximum = PowerAxis.AbsoluteMaximum = plotMax;
+            PowerAxis.Minimum = PowerAxis.AbsoluteMinimum = plotMin;
+            LineSeries.ItemsSource = itemsSource;
+            LineSeries.TrackerFormatString = trackerFormatString;
 
-            OxyPlotView.Padding = new(8, 8, 8, 8);
+            TimeAxis.InternalAxis.AxisChanged += AxisChangedEvent;
 
-            var margins = OxyPlotView.PlotMargins;
-            margins.Bottom = 0;
-            OxyPlotView.PlotMargins = margins;
-
-            TimeAxis.TitleFontSize = 1;
-            LineSeries2.ItemsSource = script.ToPlotRight();
-            //LineSeries2.TrackerFormatString = script.TrackerFormatString;
-            OxyPlotView2.Visibility = Visibility.Visible;
-            TimeAxis2.InternalAxis.AxisChanged += Axis2ChangedEvent;
-
-            CheckBox_UfotwLRDifferent.Visibility = Visibility.Visible;
-            var deference = script.DetectDeference();
-            foreach (var (start, end) in deference)
+            if (_scriptTimeFormatter != null)
             {
-                UfotwDefferenceAnnotations.Add(new OxyPlot.Wpf.RectangleAnnotation()
-                {
-                    MinimumX = start,
-                    MaximumX = end,
-                    MinimumY = -100,
-                    MaximumY = 100,
-                    Fill = Colors.NavajoWhite,
-                    Layer = AnnotationLayer.BelowSeries
-                });
+                TimeAxis.LabelFormatter = _scriptTimeFormatter;
+                TimeAxis2.LabelFormatter = _scriptTimeFormatter;
+            }
 
-                UfotwDefferenceAnnotations2.Add(new OxyPlot.Wpf.RectangleAnnotation()
+            if (IsDualChart)
+            {
+                PlotsGrid.RowDefinitions.Add(new() { Height = new GridLength(1.23, GridUnitType.Star) });
+                TimeAxis.TextColor = Colors.Transparent;
+                TimeAxis.TickStyle = TickStyle.None;
+
+                OxyPlotView.Padding = new(8, 8, 8, 8);
+                var margins = OxyPlotView.PlotMargins;
+                margins.Bottom = 0;
+                OxyPlotView.PlotMargins = margins;
+
+                TimeAxis.TitleFontSize = 1;
+
+                LineSeries2.ItemsSource = itemsSource2;
+                LineSeries2.TrackerFormatString = trackerFormatString;
+                OxyPlotView2.Visibility = Visibility.Visible;
+                TimeAxis2.InternalAxis.AxisChanged += Axis2ChangedEvent;
+
+                if (differenceRanges != null)
                 {
-                    MinimumX = start,
-                    MaximumX = end,
-                    MinimumY = -100,
-                    MaximumY = 100,
-                    Fill = Colors.NavajoWhite,
-                    Layer = AnnotationLayer.BelowSeries
-                });
+                    CheckBox_UfotwLRDifferent.Visibility = Visibility.Visible;
+                    foreach (var (start, end) in differenceRanges)
+                    {
+                        UfotwDefferenceAnnotations.Add(new OxyPlot.Wpf.RectangleAnnotation()
+                        {
+                            MinimumX = start,
+                            MaximumX = end,
+                            MinimumY = -100,
+                            MaximumY = 100,
+                            Fill = Colors.NavajoWhite,
+                            Layer = AnnotationLayer.BelowSeries
+                        });
+
+                        UfotwDefferenceAnnotations2.Add(new OxyPlot.Wpf.RectangleAnnotation()
+                        {
+                            MinimumX = start,
+                            MaximumX = end,
+                            MinimumY = -100,
+                            MaximumY = 100,
+                            Fill = Colors.NavajoWhite,
+                            Layer = AnnotationLayer.BelowSeries
+                        });
+                    }
+                }
             }
 
             OxyPlotView.ResetAllAxes();
             OxyPlotView2.ResetAllAxes();
         }
 
-        private void DisplayChart()
-        {
-            PowerAxis.Maximum = PowerAxis.AbsoluteMaximum = _script.PlotMax;
-            PowerAxis.Minimum = PowerAxis.AbsoluteMinimum = _script.PlotMin;
-            LineSeries.ItemsSource = _script.ToPlot();
-            LineSeries.TrackerFormatString = _script.TrackerFormatString;
-            TimeAxis.InternalAxis.AxisChanged += AxisChangedEvent;
-            OxyPlotView.ResetAllAxes();
-        }
-
-
         public void SetTimeAxisLabelScriptTime()
         {
-            TimeAxis.LabelFormatter = TimeAxis2.LabelFormatter = _script.LabelFormatter_ScriptTime;
+            if (_scriptTimeFormatter != null)
+            {
+                TimeAxis.LabelFormatter = _scriptTimeFormatter;
+                TimeAxis2.LabelFormatter = _scriptTimeFormatter;
+            }
         }
 
-        public virtual void SetTimeAxisLabelHHMMSS()
+        public void SetTimeAxisLabelHHMMSS()
         {
             TimeAxis.LabelFormatter = TimeAxis2.LabelFormatter = LabelFormatter_HHMMSS;
         }
 
-        private static string LabelFormatter_HHMMSS(double milliseconds) => ScriptUtil.MillisecondsToHHMMSS((int)milliseconds);
+        private static string LabelFormatter_HHMMSS(double milliseconds) =>
+            SexToyScriptViewer.Script.ScriptUtil.MillisecondsToHHMMSS(milliseconds);
 
-        public virtual void MovePlayingAnnotation(double milliseconds)
+        public void MovePlayingAnnotation(double milliseconds)
         {
             double position = milliseconds;
             double actualMax = TimeAxis.InternalAxis.ActualMaximum;
@@ -120,12 +136,13 @@ namespace SexToyScriptViewer.Control
             else
                 TimeAxis.InternalAxis.Zoom(min, position + range / 2);
 
-            if (_script is UFOTW)
+            if (IsDualChart)
+            {
                 if (min < 0)
                     TimeAxis2.InternalAxis.Zoom(0, range);
                 else
                     TimeAxis2.InternalAxis.Zoom(min, position + range / 2);
-
+            }
         }
 
         public void ZoomTimeAxis(double min, double max)
@@ -136,7 +153,7 @@ namespace SexToyScriptViewer.Control
 
             TimeAxis.InternalAxis.Zoom(min, max);
             OxyPlotView.InvalidatePlot();
-            if (_script is UFOTW)
+            if (IsDualChart)
             {
                 TimeAxis2.InternalAxis.Zoom(min, max);
                 OxyPlotView2.InvalidatePlot();
@@ -145,19 +162,12 @@ namespace SexToyScriptViewer.Control
 
         private void ReloadButton_Click(object sender, RoutedEventArgs e)
         {
-            var script = ScriptUtil.LoadScript(_script.FilePath);
-            if (script != null)
-            {
-                _script = script;
-                DisplayChart();
-                _mainWindow.RefleshCharts();
-            }
-
+            _controller.ReloadChart(this);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.CloseChart(this);
+            _controller.CloseChart(this);
         }
 
         private void AxisChangedEvent(object? sender, AxisChangedEventArgs e)
@@ -172,8 +182,8 @@ namespace SexToyScriptViewer.Control
             var type = e.ChangeType;
             if (type == AxisChangeTypes.Pan | type == AxisChangeTypes.Zoom)
             {
-                Dispatcher.Invoke(() => _mainWindow.SyncChartsRange(this));
-                if (_script is UFOTW)
+                Dispatcher.Invoke(() => _controller.SyncChartsRange(this, min, max));
+                if (IsDualChart)
                 {
                     TimeAxis2.InternalAxis.Zoom(min, max);
                     Dispatcher.Invoke(() => OxyPlotView2.InvalidatePlot());
@@ -195,18 +205,18 @@ namespace SexToyScriptViewer.Control
             {
                 TimeAxis.InternalAxis.Zoom(min, max);
                 Dispatcher.Invoke(() => OxyPlotView.InvalidatePlot());
-                Dispatcher.Invoke(() => _mainWindow.SyncChartsRange(this));
+                Dispatcher.Invoke(() => _controller.SyncChartsRange(this, min, max));
             }
         }
 
         private void OxyPlotView_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _mainWindow.IsUserDragging = true;
+            _controller.IsUserDragging = true;
         }
 
         private void OxyPlotView_PreviewMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _mainWindow.IsUserDragging = false;
+            _controller.IsUserDragging = false;
         }
 
         private void CheckBox_UfotwLRDifferent_Checked(object sender, RoutedEventArgs e)
@@ -224,8 +234,8 @@ namespace SexToyScriptViewer.Control
         {
             foreach (var a in UfotwDefferenceAnnotations)
                 OxyPlotView.Annotations.Remove(a);
-            foreach (var a2 in UfotwDefferenceAnnotations2)
-                OxyPlotView2.Annotations.Remove(a2);
+            foreach (var a in UfotwDefferenceAnnotations2)
+                OxyPlotView2.Annotations.Remove(a);
 
             OxyPlotView.InvalidatePlot();
             OxyPlotView2.InvalidatePlot();

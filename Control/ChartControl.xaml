@@ -144,7 +144,7 @@
 
                 <!--  プロットデータの設定  -->
                 <oxy:Plot.Series>
-                    <oxy:LineSeries x:Name="LineSeries2" TrackerFormatString="{Binding ElementName=LineSeries, Path=(oxy:LineSeries.TrackerFormatString)}" />
+                    <oxy:LineSeries x:Name="LineSeries2" />
                 </oxy:Plot.Series>
 
                 <oxy:Plot.Annotations>
